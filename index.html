@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diario de Estudio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="contenedor">
+    <header class="cabecera">
+      <h1 class="cabecera__titulo">Diario de Estudio</h1>
+      <p class="cabecera__subtitulo">Registra tus sesiones y cuida tu racha.</p>
+    </header>
+
+    <section class="tarjeta tarjeta--racha" aria-live="polite">
+      <p class="racha__etiqueta">Racha actual</p>
+      <p class="racha__valor">
+        <span class="racha__fuego" aria-hidden="true">🔥</span>
+        <span id="rachaDias">0</span>
+        <span class="racha__unidad">días</span>
+      </p>
+      <p class="racha__detalle" id="rachaDetalle"></p>
+      <p class="mejor-racha">Mejor racha: <span id="mejorRachaDias">0</span> días</p>
+    </section>
+
+    <section class="tarjeta">
+      <h2 class="tarjeta__titulo">Mapa de calor</h2>
+      <div class="mapa" id="mapaCalor"></div>
+      <div class="mapa__leyenda" id="mapaLeyenda"></div>
+    </section>
+
+    <section class="tarjeta">
+      <h2 class="tarjeta__titulo">Nueva sesión</h2>
+
+      <form id="formulario" class="formulario" novalidate>
+        <div class="campo">
+          <label class="campo__etiqueta" for="fecha">Fecha</label>
+          <input class="campo__control" type="date" id="fecha" name="fecha" required>
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="tema">Tema</label>
+          <input class="campo__control" type="text" id="tema" name="tema"
+                 placeholder="¿Qué estudiaste?" autocomplete="off" required>
+        </div>
+
+        <div class="campo">
+          <label class="campo__etiqueta" for="minutos">Minutos</label>
+          <input class="campo__control" type="number" id="minutos" name="minutos"
+                 placeholder="Ej: 45" min="1" step="1" inputmode="numeric" required>
+        </div>
+
+        <p class="error" id="error" role="status" hidden></p>
+
+        <button class="boton" type="submit">Añadir sesión</button>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2 class="tarjeta__titulo">Sesiones</h2>
+      <ul class="sesiones" id="listaSesiones"></ul>
+      <p class="vacio" id="listaVacia" hidden>Todavía no has registrado ninguna sesión.</p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
