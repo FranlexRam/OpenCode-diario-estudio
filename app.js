@@ -312,6 +312,13 @@ function ocultarError() {
   mensajeError.hidden = true;
 }
 
+function validarTema(tema) {
+  if (tema.length > 200) {
+    return "El tema no puede tener más de 200 caracteres.";
+  }
+  return null;
+}
+
 if (typeof document !== "undefined") {
   const tema = temaInicial();
   aplicarTema(tema);
@@ -337,6 +344,11 @@ if (typeof document !== "undefined") {
       mostrarError("Escribe el tema que estudiaste.");
       return;
     }
+    const errorTema = validarTema(tema);
+    if (errorTema) {
+      mostrarError(errorTema);
+      return;
+    }
     if (!Number.isFinite(minutos) || minutos <= 0) {
       mostrarError("Los minutos tienen que ser un número mayor que 0.");
       return;
@@ -356,5 +368,5 @@ if (typeof document !== "undefined") {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { nivelDeMinutos, minutosPorDia, semanasDelPeriodo, etiquetaTooltip, celdaDeDia, resolverTema, temaInicial, alternarTema };
+  module.exports = { nivelDeMinutos, minutosPorDia, semanasDelPeriodo, etiquetaTooltip, celdaDeDia, resolverTema, temaInicial, alternarTema, validarTema };
 }

@@ -22,6 +22,8 @@
 
 **Spec 002 — Modo Oscuro (APROBADA 2026-10-06).** Botón toggle en cabecera, persistencia en localStorage (`diarioEstudio.tema`), detección de `prefers-color-scheme`, variables CSS `:root[data-theme="dark"]`, contraste WCAG AA. 33/33 tests verde, veredicto APROBADO, validación visual del usuario confirmada. Archivo: `specs/002-modo-oscuro/spec.md`.
 
+**Auditoría de seguridad (2026-10-06).** VISTO BUENO con observaciones menores. XSS/DOM: OK (createElement/textContent, sin innerHTML). Corrección aplicada: `maxlength="200"` en input tema + `validarTema()` en app.js + 4 tests en `tests/tema-longitud.test.js`. 37/37 tests verde, corrección APROBADA por reviewer.
+
 ## Archivos
 
 - `index.html` — estructura: cabecera, tarjeta de racha, formulario, lista de sesiones.
