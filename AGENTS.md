@@ -2,15 +2,67 @@
 
 Sitio estático sin build: `index.html`, `styles.css`, `app.js`. Se abre con doble clic en `index.html` (file://), sin servidor ni dependencias.
 
+## Sistema Multiagente (MAS)
+
+Cuatro agentes con roles estrictos. Ningún agente puede saltarse su rol ni modificar archivos fuera de sus responsabilidades permitidas.
+
+### Agentes
+
+| Agente | Rol | Responsabilidades | Archivos permitidos |
+|---|---|---|---|
+| **coordinator** | Orquestador general y único punto de contacto con el usuario | Asigna tareas, gestiona el flujo, actualiza MEMORY.md, reporta al usuario | `MEMORY.md`, `AGENTS.md` |
+| **planner** | Diseña la solución | Redacta specs (EARS), plan técnico y tasks.md | `specs/**`, `tasks.md` |
+| **implementer** | Desarrolla atómicamente | TDD estricto con `node --test`, sin tocar arquitectura | `index.html`, `styles.css`, `app.js`, `tests/**` |
+| **reviewer** | Audita y valida | Revisa tests, valida visualmente en Chrome DevTools (375 px y consola limpia). Tiene poder de veto | Solo lectura |
+
+### Protocolo de traspaso (handoff)
+
+Cada transición entre agentes requiere un entregable verificable:
+
+- **coordinator → planner:** descripción del problema o feature solicitada.
+- **planner → coordinator:** spec (EARS), plan técnico y `tasks.md` listos para aprobación.
+- **coordinator → implementer:** tarea atómica específica del `tasks.md` aprobado.
+- **implementer → reviewer:** tarea completada con tests pasando (`node --test` sin errores).
+- **reviewer → implementer:** lista de fallos concretos (solo si hay veto).
+- **reviewer → coordinator:** aprobación final con resumen de validación.
+
+### Máquina de estados del flujo de trabajo
+
+```
+INICIO → PLANIFICADO → EN_PROGRESO → EN_REVISION → APROBADO
+                      ↑                        │
+                      └────── RETRABAJO ←──────┘
+```
+
+| Estado | Significado | Transición |
+|---|---|---|
+| **INICIO** | coordinator recibe la solicitud del usuario | coordinator asigna a planner |
+| **PLANIFICADO** | planner entrega spec/plan a coordinator | coordinator aprueba y asigna a implementer |
+| **EN_PROGRESO** | implementer desarrolla tareas atómicas con TDD | implementer concluye y entrega a reviewer |
+| **EN_REVISION** | reviewer audita tests y valida visualmente | reviewer aprueba (→ APROBADO) o rechaza (→ RETRABAJO) |
+| **RETRABAJO** | reviewer rechaza con lista de fallos | implementer corrige y vuelve a EN_REVISION |
+| **APROBADO** | reviewer aprueba | coordinator actualiza MEMORY.md y reporta al usuario |
+
+### Regla transversal innegociable
+
+**Ningún agente puede saltarse su rol ni modificar archivos fuera de sus responsabilidades permitidas.**
+
 ## Restricciones del proyecto
 
-- Solo tres archivos. No añadir frameworks, librerías, bundler ni tests automáticos.
+- Solo tres archivos de app. No añadir frameworks, librerías, bundler ni tests automáticos fuera de `tests/**`.
 - Todos los textos de la interfaz en español.
 - Sin comentarios en el código.
 
 ## Verificación
 
-No hay tests automáticos todavía. Después de cada cambio visual o funcional, verifica con el MCP de Chrome DevTools: abre index.html, prueba la funcionalidad, revisa la consola y comprueba la vista móvil de 375 px.
+No hay lint ni typecheck. Para verificar cambios:
+
+```bash
+node --check app.js   # sintaxis
+node --test           # tests (cuando existan)
+```
+
+La lógica de fechas y racha se puede probar en Node extrayendo las funciones puras (`hoy`, `moverDia`, `calcularRacha`, `calcularMejorRacha`) sin DOM.
 
 ## Memoria
 

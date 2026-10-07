@@ -20,6 +20,8 @@
 
 **Spec 001 — FINALIZADA CON ÉXITO (2026-10-06).** Mapa de calor implementado: 12 semanas, 4 niveles, leyenda, tooltip. 22/22 tests verde, veredicto RF/RNF aprobado en Chrome DevTools 375px. Estado en spec.md: `implementada`.
 
+**Spec 002 — Modo Oscuro (APROBADA 2026-10-06).** Botón toggle en cabecera, persistencia en localStorage (`diarioEstudio.tema`), detección de `prefers-color-scheme`, variables CSS `:root[data-theme="dark"]`, contraste WCAG AA. 33/33 tests verde, veredicto APROBADO, validación visual del usuario confirmada. Archivo: `specs/002-modo-oscuro/spec.md`.
+
 ## Archivos
 
 - `index.html` — estructura: cabecera, tarjeta de racha, formulario, lista de sesiones.
@@ -43,7 +45,7 @@
 
 ## Próximos pasos sugeridos
 
-- Posible v2: borrado/edición de sesiones, estadísticas simples, modo oscuro.
+- Posible v2: borrado/edición de sesiones, estadísticas simples.
 
 ## Decisiones de v1.1
 

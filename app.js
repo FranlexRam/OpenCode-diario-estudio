@@ -1,4 +1,5 @@
 const CLAVE_ALMACENAMIENTO = "diarioEstudio.sesiones";
+const CLAVE_TEMA = "diarioEstudio.tema";
 
 const DIAS_SEMANA = ["dom", "lun", "mar", "mié", "jue", "vie", "sáb"];
 const MESES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
@@ -52,8 +53,46 @@ function celdaDeDia(fechaISO, minutosHoy) {
   return { fecha: fechaISO, minutos: minutosHoy, nivel: nivelDeMinutos(minutosHoy) };
 }
 
+function resolverTema(guardado, prefiereOscuro) {
+  if (guardado === "dark" || guardado === "light") {
+    return guardado;
+  }
+  return prefiereOscuro ? "dark" : "light";
+}
+
+function temaInicial() {
+  const guardado = localStorage.getItem(CLAVE_TEMA);
+  if (guardado === "dark" || guardado === "light") {
+    return guardado;
+  }
+  if (typeof window !== "undefined" && window.matchMedia) {
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  return "light";
+}
+
+function aplicarTema(tema) {
+  document.documentElement.setAttribute("data-theme", tema);
+}
+
+function alternarTema() {
+  const actual = document.documentElement.getAttribute("data-theme") || "light";
+  const nuevo = actual === "dark" ? "light" : "dark";
+  aplicarTema(nuevo);
+  localStorage.setItem(CLAVE_TEMA, nuevo);
+  return nuevo;
+}
+
+function actualizarBotonTema(tema) {
+  const esOscuro = tema === "dark";
+  botonTema.setAttribute("aria-label", esOscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro");
+  botonTema.querySelector("[aria-hidden]").textContent = esOscuro ? "☀️" : "🌙";
+  botonTema.querySelector(".boton-tema__texto").textContent = esOscuro ? "Claro" : "Oscuro";
+}
+
 let formulario, campoFecha, campoTema, campoMinutos, mensajeError;
 let listaSesiones, listaVacia, rachaDias, rachaDetalle, mejorRachaDias;
+let botonTema;
 let sesiones;
 
 if (typeof document !== "undefined") {
@@ -67,6 +106,7 @@ if (typeof document !== "undefined") {
   rachaDias = document.getElementById("rachaDias");
   rachaDetalle = document.getElementById("rachaDetalle");
   mejorRachaDias = document.getElementById("mejorRachaDias");
+  botonTema = document.getElementById("botonTema");
 
   sesiones = leerSesiones();
 }
@@ -241,11 +281,12 @@ function pintarMapa() {
 
   mapa.replaceChildren(contenedorEtiquetas, grid);
 
+  const estilos = getComputedStyle(document.documentElement);
   const niveles = [
-    { texto: "0", color: "#ebedf0" },
-    { texto: "1-29", color: "#9be9a8" },
-    { texto: "30-59", color: "#40c463" },
-    { texto: "60+", color: "#216e39" },
+    { texto: "0", color: estilos.getPropertyValue("--celda-vacia").trim() },
+    { texto: "1-29", color: estilos.getPropertyValue("--mapa-nivel-1").trim() },
+    { texto: "30-59", color: estilos.getPropertyValue("--mapa-nivel-2").trim() },
+    { texto: "60+", color: estilos.getPropertyValue("--mapa-nivel-3").trim() },
   ];
   const itemsLeyenda = niveles.map((nivel) => {
     const item = document.createElement("div");
@@ -272,6 +313,15 @@ function ocultarError() {
 }
 
 if (typeof document !== "undefined") {
+  const tema = temaInicial();
+  aplicarTema(tema);
+  actualizarBotonTema(tema);
+
+  botonTema.addEventListener("click", () => {
+    const nuevo = alternarTema();
+    actualizarBotonTema(nuevo);
+  });
+
   formulario.addEventListener("submit", (evento) => {
     evento.preventDefault();
 
@@ -306,5 +356,5 @@ if (typeof document !== "undefined") {
 }
 
 if (typeof module !== "undefined") {
-  module.exports = { nivelDeMinutos, minutosPorDia, semanasDelPeriodo, etiquetaTooltip, celdaDeDia };
+  module.exports = { nivelDeMinutos, minutosPorDia, semanasDelPeriodo, etiquetaTooltip, celdaDeDia, resolverTema, temaInicial, alternarTema };
 }
